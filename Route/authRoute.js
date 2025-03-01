@@ -12,9 +12,17 @@ const login = require("../Controllers/user/login");
 router.get("/", (req, res) => {
     res.send("Bienvenue sur l'application de gestion de projecteurs");
   });
+
+//Middleware
+const verifyToken = require("../Middleware/auth");
+
   
 // Utiliser les routes d'authentification
 router.use('/', register);
 router.use('/', login);
 
+// Route protégée pour le profile 
+router.get('/profile', verifyToken, (req, res) => {
+  res.status(200).send(`Bonjour ${req.userId}`);
+});
 module.exports = router;
