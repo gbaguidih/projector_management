@@ -9,6 +9,7 @@ const bcrypt = require('bcrypt');
 const auth = require("./Route/authRoute"); 
 const projecteur = require("./Route/projecteurRoute");
 const reservation = require("./Route/reservationRoute");
+const role = require("./Route/roleRoute"); 
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(bodyParser.json());
 app.use('/', auth);
 app.use('/', projecteur);
 app.use('/', reservation);
+app.use('/', role);
 
 app.listen(3000, () => {
   console.log("Serveur démarré (http://localhost:3000)!");
