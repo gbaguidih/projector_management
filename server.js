@@ -1,36 +1,19 @@
-require('dotenv').config();
-const express = require('express');
-
-const authRoutes = require('./routes/authRoutes');
-
-const projectorRoutes = require('./routes/projectorRoutes');
-const reservationRoutes = require('./routes/reservationRoutes');
-const adminRoutes = require('./routes/adminRoutes');
+const express = require("express");                      // Importation du server express
+const bodyParser = require('body-parser');               // module pour accéder à la requete  
+const db = require("./config/db");                       // Importation de la base de donnée
+const createTable = require("./config/createTable");
 
 const app = express();
+app.use(bodyParser.json());
 
-app.use(express.json());
+app.listen(3000, () => {
+    console.log("Serveur démarré (http://localhost:3000)!");
+  });
 
-app.get('/', (req, res) => {
-  res.status(200).json({ message: "Serveur Node.js avec Express fonctionne " });
+
+// Fermerture de la base de données lors de l'arrêt de l'application
+process.on('SIGINT', () => {
+    createTable.closeDatabase();
+    process.exit();
 });
-
-
-
-
-// Définition des routes
-app.use('/api/auth', authRoutes);
-app.use('/api/auth2', adminRoutes);
-app.use('/api/projectors', projectorRoutes);
-app.use('/api/reservations', reservationRoutes);
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Une erreur interne est survenue' });
-});
-
-// Démarrer le serveur
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(` Serveur démarré sur http://localhost:${PORT}`);
-});
+  
