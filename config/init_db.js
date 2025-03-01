@@ -1,47 +1,29 @@
-//Importation de la logique de création de la base de donnée db
-const db = require("./db")
+const sqlite3 = require('sqlite3').verbose();
 
-// Création des tables
-db.serialize(() => {
-    
-    // Table des utilisateurs
-    db.run(
-        `    CREATE TABLE IF NOT EXISTS users (
+const db = new sqlite3.Database('./database.sqlite', (err) => {
+    if (err) {
+        console.error('Erreur de connexion à la base de données SQLite :', err);
+    } else {
+        console.log('Connexion réussie à la base de données SQLite');
+    }
+});
+
+const createTables = `
+    CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
         role TEXT CHECK(role IN ('student', 'teacher', 'admin')) NOT NULL
-    )`, 
-        (err) => {
-            if (err){
-                console.log(err.message);
-            } else {
-                console.log('La table user est créer !!! ');
-            }   
-        }
     );
 
-    // Table des projecteurs
-    db.run(
-        ` CREATE TABLE IF NOT EXISTS projectors (
+    CREATE TABLE IF NOT EXISTS projectors (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         status TEXT CHECK(status IN ('working', 'broken')) NOT NULL DEFAULT 'working',
         available INTEGER NOT NULL DEFAULT 1
-    )`, 
-        (err) => {
-            if (err){
-                console.log(err.message);
-            } else {
-                console.log('La table projectors est créer !!! ');
-            }   
-        }
     );
 
-    // Table des reservations
-    db.run(
-        `
     CREATE TABLE IF NOT EXISTS reservations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
@@ -49,27 +31,15 @@ db.serialize(() => {
         datetime TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (projector_id) REFERENCES projectors(id) ON DELETE CASCADE
-    )`, 
-        (err) => {
-            if (err){
-                console.log(err.message);
-            } else {
-                console.log('La table reservations est créer !!! ');
-            }   
-        }
     );
+`;
+
+db.exec(createTables, (err) => {
+    if (err) {
+        console.error('Erreur lors de la création des tables :', err);
+    } else {
+        console.log('Tables créées avec succès');
+    }
 });
 
-// Définir la fonction closeDatabase qui permet de fermet la base de donnée lorsqu'on coupe l'application
-const closeDatabase = () => {
-    db.close((err) => {
-      if (err) {
-        console.error(err.message);
-      } else {
-        console.log('Fermeture de la base de données.');
-      }
-    });
-  };
-  
-
-module.exports = closeDatabase;
+module.exports = db;
