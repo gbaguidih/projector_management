@@ -8,6 +8,7 @@ exports.register = async (req, res) => {
 
     db.get('SELECT * FROM users WHERE email = ?', [email], async (err, existingUser) => {
       if (err) {
+        console.error('Erreur SELECT:', err);
         return res.status(500).json({ message: 'Erreur serveur', error: err });
       }
       if (existingUser) return res.status(400).json({ message: 'Utilisateur déjà existant' });
@@ -17,6 +18,7 @@ exports.register = async (req, res) => {
       db.run('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)', 
              [name, email, hashedPassword, role || 'student'], function(err) {
         if (err) {
+          console.error('Erreur INSERT:', err);
           return res.status(500).json({ message: 'Erreur serveur', error: err });
         }
 
@@ -25,6 +27,7 @@ exports.register = async (req, res) => {
     });
 
   } catch (error) {
+    console.error('Erreur générale:', error);
     res.status(500).json({ message: 'Erreur serveur', error });
   }
 };
@@ -35,6 +38,7 @@ exports.login = async (req, res) => {
 
     db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
       if (err) {
+        console.error('Erreur SELECT:', err);
         return res.status(500).json({ message: 'Erreur serveur', error: err });
       }
       if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
@@ -48,6 +52,7 @@ exports.login = async (req, res) => {
     });
 
   } catch (error) {
+    console.error('Erreur générale:', error);
     res.status(500).json({ message: 'Erreur serveur', error });
   }
 };
@@ -58,6 +63,7 @@ exports.profile = async (req, res) => {
 
     db.get('SELECT id, name, email, role FROM users WHERE id = ?', [userId], (err, user) => {
       if (err) {
+        console.error('Erreur SELECT:', err);
         return res.status(500).json({ message: 'Erreur serveur', error: err });
       }
       if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
@@ -66,6 +72,7 @@ exports.profile = async (req, res) => {
     });
 
   } catch (error) {
+    console.error('Erreur générale:', error);
     res.status(500).json({ message: 'Erreur serveur', error });
   }
 };
