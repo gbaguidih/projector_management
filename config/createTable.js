@@ -6,14 +6,13 @@ db.serialize(() => {
     
     // Table des utilisateurs
     db.run(
-        `CREATE TABLE IF NOT EXISTS users (
-        id_user INTEGER PRIMARY KEY AUTOINCREMENT,
-        nom TEXT NOT NULL ,
-        prenom TEXT NOT NULL ,
-        email TEXT NOT NULL UNIQUE,
+        `    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        role TEXT NOT NULL CHECK (role IN ('etudiant' , 'enseignant' , 'administrateur'))
-        )`, 
+        role TEXT CHECK(role IN ('student', 'teacher', 'admin')) NOT NULL
+    )`, 
         (err) => {
             if (err){
                 console.log(err.message);
@@ -25,12 +24,12 @@ db.serialize(() => {
 
     // Table des projecteurs
     db.run(
-        `CREATE TABLE IF NOT EXISTS projecteurs  (
-        id_projecteur INTEGER PRIMARY KEY AUTOINCREMENT,
-        nom TEXT NOT NULL,
-        cables TEXT NOT NULL CHECK (cables IN ('HDMI' , 'VGA')),
-        status TEXT NOT NULL CHECK (status IN ('Libre' , 'Occupe')) DEFAULT 'Libre'
-        )`, 
+        ` CREATE TABLE IF NOT EXISTS projectors (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        status TEXT CHECK(status IN ('working', 'broken')) NOT NULL DEFAULT 'working',
+        available INTEGER NOT NULL DEFAULT 1
+    )`, 
         (err) => {
             if (err){
                 console.log(err.message);
@@ -42,17 +41,15 @@ db.serialize(() => {
 
     // Table des reservations
     db.run(
-        `CREATE TABLE IF NOT EXISTS reservations (
-        id_reservation  INTEGER PRIMARY KEY AUTOINCREMENT,
+        `
+    CREATE TABLE IF NOT EXISTS reservations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
-        projecteur_id INTEGER NOT NULL,
-        date_reservation DATE NOT NULL,
-        start_time TEXT NOT NULL,
-        end_time TEXT NOT NULL,
-        FOREIGN KEY(user_id) REFERENCES users(id_user),
-        FOREIGN KEY(projecteur_id) REFERENCES projecteurs(id_projecteur)
-        UNIQUE(projecteur_id, date_reservation, start_time, end_time)
-        )`, 
+        projector_id INTEGER NOT NULL,
+        datetime TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (projector_id) REFERENCES projectors(id) ON DELETE CASCADE
+    )`, 
         (err) => {
             if (err){
                 console.log(err.message);
