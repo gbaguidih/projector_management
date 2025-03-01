@@ -3,8 +3,9 @@ const db = require("../config/db");
 const createTable = require("../config/createTable");
 const router = express.Router(); // router Express
 
-// Importer de la route register 
+// Importer les routes register et login
 const register = require("../Controllers/user/register");
+const login = require("../Controllers/user/login");
 
 
 // Route d'accueil
@@ -12,7 +13,8 @@ router.get("/", (req, res) => {
     res.send("Bienvenue sur l'application de gestion de projecteurs");
   });
   
-// Utiliser la route d'authentification
+// Utiliser les routes d'authentification
 router.use('/', register);
+router.use('/', login);
 
 module.exports = router;
